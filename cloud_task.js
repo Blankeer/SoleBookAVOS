@@ -728,10 +728,10 @@ function getRandomBook() {
     var query = new AV.Query('Book');
     query.skip(t).limit(1);
     query.first().then(function (object) {
-        console.log("getRandomBook  book=" + object);
+        console.log("getRandomBook  book=" + object + "," + t);
         return object;
     }, function (error) {
-        getRandomBook();
+        return getRandomBook();
     });
 }
 // 云函数
