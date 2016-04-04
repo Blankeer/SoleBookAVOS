@@ -724,13 +724,14 @@ AV.Cloud.define('cloud_search_isbn', function (request, response) {
  * 随机获得一个
  */
 function getRandomBook() {
-    var t = Math.ceil(Math.random() * 11000);
+    var t = Math.ceil(Math.random() * 300);
     var query = new AV.Query('Book');
     query.skip(t).limit(1);
     query.first().then(function (object) {
         console.log("getRandomBook  book=" + object + "," + t);
         return object;
     }, function (error) {
+        console.log("getRandomBook  error=" + error + "," + t);
         return getRandomBook();
     });
 }
