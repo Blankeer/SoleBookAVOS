@@ -723,16 +723,16 @@ AV.Cloud.define('cloud_search_isbn', function (request, response) {
 /**
  * 随机获得一个
  */
-function getRandomBook() {
+function getRandomBook(callback) {
     var t = Math.ceil(Math.random() * 300);
     var query = new AV.Query('Book');
     query.skip(t).limit(1);
     query.first().then(function (object) {
         console.log("getRandomBook  book=" + object + "," + t);
-        return object;
+        callback(object);
     }, function (error) {
         console.log("getRandomBook  error=" + error + "," + t);
-        return getRandomBook();
+        getRandomBook(callback);
     });
 }
 // 云函数
@@ -740,9 +740,13 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
     var count = request.params.count;
     var res = [];
     for (var i = 0; i < count; i++) {
-        res.push(getRandomBook());
+        getRandomBook(function (obj) {
+            res.push(obj);
+            if (res.length == count) {
+                response.success(res);
+            }
+        });
     }
-    response.success(res);
 });
 
 function sleep(n) {
