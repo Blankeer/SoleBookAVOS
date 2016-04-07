@@ -4,7 +4,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var todos = require('./routes/todos');
 //var cloud = require('./cloud');
 //var cloud_book=require('./cloud_book');
 //var cloud_pac=require('./cloud_pac');
@@ -53,9 +52,6 @@ app.use(function(req, res, next) {
 app.get('/', function(req, res) {
     res.render('index', { currentTime: new Date() });
 });
-
-// 可以将一类的路由单独保存在一个文件中,以/todos开头的路径，交给todos.js处理
-//app.use('/todos', todos);
 
 // 如果任何路由都没匹配到，则认为 404
 // 生成一个异常让后面的 err handler 捕获
