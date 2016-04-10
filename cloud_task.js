@@ -754,7 +754,7 @@ AV.Cloud.afterSave('BookComment', function (request) {
     var reply = request.object.get("reply");//获得对方
     var query = new AV.Query('User');
     if (reply != null) {
-        query.get(reply.get('user').id, {
+        query.get(reply.get('user').getObjectId(), {
             success: function (user) {
                 var query = new AV.Query('_Installation');
                 query.equalTo('installationId', user.get("deviceId"));
