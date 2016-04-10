@@ -754,7 +754,7 @@ AV.Cloud.afterSave('BookComment', function (request) {
     var reply = request.object.get("reply");//获得对方
     var query = new AV.Query('User');
     if (reply != null) {
-        query.get(reply.get('user').getObjectId(), {
+        query.get(reply.get('user').getObjectId, {
             success: function (user) {
                 var query = new AV.Query('_Installation');
                 query.equalTo('installationId', user.get("deviceId"));
@@ -764,7 +764,7 @@ AV.Cloud.afterSave('BookComment', function (request) {
                         alert: '你收到了新的回复'
                     }
                 });
-                console.log('发送回复提醒推送成功,userid=' + uset.getObjectId());
+                console.log('发送回复提醒推送成功,userid=' + user.getObjectId);
             },
             error: function (error) {
             }
