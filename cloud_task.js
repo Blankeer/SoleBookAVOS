@@ -751,30 +751,29 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
 
 // 评论保存之后,给对方发送推送
 AV.Cloud.afterSave('BookComment', function (request) {
-    var comment = request.object;
-    console.log(comment);
-    console.log("-------------");
+    var replyId = request.object.get("reply").id;
     var q = new AV.Query("BookComment");
-    q.equalTo("objectId", comment.get("objectId"));
-    q.find().then(function (comment) {
-        console.log(comment);
+    console.log(replyId);
+    q.equalTo("objectId", replyId);
+    q.first().then(function (reply) {
         // var reply = comment.get("reply");//获得对方
         // console.log(reply.get("objectId"));
-        // if (reply != null) {
-        //     var query = new AV.Query('_Installation');
-        //     // var user = reply.get("user");
-        //     reply.get("user").then(function (user) {
-        //         console.log('userid=' + user.get("objectId"));
-        //         query.equalTo('installationId', user.get("deviceId"));
-        //         AV.Push.send({
-        //             where: query,
-        //             data: {
-        //                 alert: '你收到了新的回复'
-        //             }
-        //         });
-        //         console.log('发送回复提醒推送成功,userid=' + user.get("objectId"));
-        //     });
-        // }
+        if (reply != null) {
+            var query = new AV.Query('_Installation');
+            q=new Av.Query("_User");
+            a.equalTo("objectId",reply.get("user").id);
+            q.first().then(function (user) {
+                console.log('userid=' + user.id);
+                query.equalTo('installationId', user.get("deviceId"));
+                AV.Push.send({
+                    where: query,
+                    data: {
+                        alert: '你收到了新的回复'
+                    }
+                });
+                console.log('发送回复提醒推送成功,userid=' + user.id);
+            });
+        }
     }, function (error) {
         console.log(error);
     });
