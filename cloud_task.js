@@ -751,29 +751,27 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
 
 // 评论保存之后,给对方发送推送
 AV.Cloud.afterSave('BookComment', function (request) {
-    var reply = request.object.get("reply");//获得对方
-    console.log(reply);
-    var query = new AV.Query('User');
-
-    if (reply != null) {
-        console.log(reply.get('user').get("objectId"));
-        query.get(reply.get('user').get("objectId"), {
-            success: function (user) {
-                var query = new AV.Query('_Installation');
-                query.equalTo('installationId', user.get("deviceId"));
-                AV.Push.send({
-                    where: query,
-                    data: {
-                        alert: '你收到了新的回复'
-                    }
-                });
-                console.log('发送回复提醒推送成功,userid=' + user.get("objectId"));
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    }
+    var comment = request.object;
+    comment.fetch({
+        include: 'reply.user.deviceId'
+    }).then(function (comment) {
+        var reply = comment.get("reply");//获得对方
+        console.log(reply);
+        if (reply != null) {
+            var query = new AV.Query('_Installation');
+            var user = comment.get("reply");
+            query.equalTo('installationId', user.get("deviceId"));
+            AV.Push.send({
+                where: query,
+                data: {
+                    alert: '你收到了新的回复'
+                }
+            });
+            console.log('发送回复提醒推送成功,userid=' + user.get("objectId"));
+        }
+    }, function (error) {
+        console.log(error);
+    });
 });
 
 function sleep(n) {
