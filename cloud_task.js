@@ -735,7 +735,7 @@ function getRandomBook(callback) {
         getRandomBook(callback);
     });
 }
-// 云函数
+// 云函数  获得随机book,count是获得数量
 AV.Cloud.define('cloud_random_book', function (request, response) {
     var count = request.params.count;
     var res = [];
@@ -744,6 +744,29 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
             res.push(obj);
             if (res.length == count) {
                 response.success(res);
+            }
+        });
+    }
+});
+
+// 评论保存之后,给对方发送推送
+AV.Cloud.afterSave('BookComment', function (request) {
+    var reply = request.object.get("reply");//获得对方
+    var query = new AV.Query('User');
+    if (reply != null) {
+        query.get(reply.get('user').id, {
+            success: function (user) {
+                var query = new AV.Query('_Installation');
+                query.equalTo('installationId', user.get("deviceId"));
+                AV.Push.send({
+                    where: query,
+                    data: {
+                        alert: '你收到了新的回复'
+                    }
+                });
+                console.log('发送回复提醒推送成功,userid=' + uset.getObjectId());
+            },
+            error: function (error) {
             }
         });
     }
