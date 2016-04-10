@@ -759,7 +759,7 @@ AV.Cloud.afterSave('BookComment', function (request) {
         if (reply != null) {
             var query = new AV.Query('_Installation');
             q=new AV.Query("_User");
-            a.equalTo("objectId",reply.get("user").id);
+            q.equalTo("objectId",reply.get("user").id);
             q.first().then(function (user) {
                 console.log('userid=' + user.id);
                 query.equalTo('installationId', user.get("deviceId"));
