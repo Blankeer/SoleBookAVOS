@@ -752,8 +752,12 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
 // 评论保存之后,给对方发送推送
 AV.Cloud.afterSave('BookComment', function (request) {
     var comment = request.object;
-    comment.get("reply").then(function (reply) {
-        // var reply = comment.get("reply");//获得对方
+    console.log(comment);
+    var q = new AV.Query("BookComment");
+    q.equalTo("objectId", comment.get("objectId"));
+    q.find().then(function (comment) {
+        console.log(comment);
+        var reply = comment.get("reply");//获得对方
         console.log(reply.get("objectId"));
         if (reply != null) {
             var query = new AV.Query('_Installation');
