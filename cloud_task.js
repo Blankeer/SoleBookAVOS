@@ -756,10 +756,11 @@ AV.Cloud.afterSave('BookComment', function (request) {
         include: 'reply.user.deviceId'
     }).then(function (comment) {
         var reply = comment.get("reply");//获得对方
-        console.log(reply);
+        console.log(reply.get("objectId"));
         if (reply != null) {
             var query = new AV.Query('_Installation');
-            var user = comment.get("reply");
+            var user = reply.get("user");
+            console.log('userid=' + user.get("objectId"));
             query.equalTo('installationId', user.get("deviceId"));
             AV.Push.send({
                 where: query,
