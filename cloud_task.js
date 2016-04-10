@@ -752,7 +752,9 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
 // 评论保存之后,给对方发送推送
 AV.Cloud.afterSave('BookComment', function (request) {
     var reply = request.object.get("reply");//获得对方
+    console.log("test1");
     var query = new AV.Query('User');
+    console.log("test2");
     if (reply != null) {
         console.log(reply.get('user').getObjectId);
         query.get(reply.get('user').getObjectId, {
