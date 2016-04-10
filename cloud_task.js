@@ -752,23 +752,23 @@ AV.Cloud.define('cloud_random_book', function (request, response) {
 // 评论保存之后,给对方发送推送
 AV.Cloud.afterSave('BookComment', function (request) {
     var comment = request.object;
-    comment.fetch({
-        include: 'reply.user.deviceId'
-    }).then(function (comment) {
-        var reply = comment.get("reply");//获得对方
+    comment.get("reply").then(function (reply) {
+        // var reply = comment.get("reply");//获得对方
         console.log(reply.get("objectId"));
         if (reply != null) {
             var query = new AV.Query('_Installation');
-            var user = reply.get("user");
-            console.log('userid=' + user.get("objectId"));
-            query.equalTo('installationId', user.get("deviceId"));
-            AV.Push.send({
-                where: query,
-                data: {
-                    alert: '你收到了新的回复'
-                }
+            // var user = reply.get("user");
+            reply.get("user").then(function (user) {
+                console.log('userid=' + user.get("objectId"));
+                query.equalTo('installationId', user.get("deviceId"));
+                AV.Push.send({
+                    where: query,
+                    data: {
+                        alert: '你收到了新的回复'
+                    }
+                });
+                console.log('发送回复提醒推送成功,userid=' + user.get("objectId"));
             });
-            console.log('发送回复提醒推送成功,userid=' + user.get("objectId"));
         }
     }, function (error) {
         console.log(error);
