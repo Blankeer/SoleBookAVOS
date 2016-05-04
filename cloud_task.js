@@ -100,11 +100,11 @@ function getHotBookIds(callback) {
         }
     }
     superagent.get('http://book.douban.com/chart?subcat=I')
-        .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
+        .set('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0')
         .set('Cookie', 'bid="' + getCookie() + '"')
         .end(call);
     superagent.get('http://book.douban.com/chart?subcat=F')
-        .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
+        .set('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0')
         .set('Cookie', 'bid="' + getCookie() + '"')
         .end(call);
 }
@@ -112,7 +112,7 @@ function getHotBookIds(callback) {
 function getTop250BookIds(callback) {
     var call = function (url, back) {
         superagent.get(url)
-            .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
+            .set('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0')
             .set('Cookie', 'bid="' + getCookie() + '"')
             .end(function (err, sres) {
                 if (err) {
@@ -156,7 +156,7 @@ function getDetailsById(id, callback) {
     var cookie = getCookie();
     var url = 'http://book.douban.com/subject/' + id;
     superagent.get(url)
-        .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
+        .set('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0')
         .set('Cookie', 'bid="' + cookie + '"')
         //   .timeout(5000)
         .end(function (err, sres) {
@@ -460,39 +460,6 @@ function searchBookIDByKeyNetWork(key, offset, count, callback) {
             }
         });
 }
-function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
-    var skip = (15 * parseInt(page));
-    var url = "https://book.douban.com/subject_search?search_text=" + encodeURI(key) + "&start=" + skip + "&cat=1001";
-    superagent.get(url)
-        .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
-        .set('Cookie', 'bid="' + getCookie() + '"')
-        .end(function (err, sres) {
-            var fail = false;
-            if (err == null) {
-                var $ = cheerio.load(sres.text);
-                var res = [];
-                $("a[href^='https://book.douban.com/subject/']:has(img)").each(function (idx, element) {
-                    var $element = $(element);
-                    var url = $element.attr('href');
-                    res.push(getDoubanIdByHref(url));
-                });
-                if (res.length > 0) {
-                    var json = {books: res};
-                    callback(JSON.stringify(json), null);
-                }
-                else {
-                    err = "search result size=0";
-                    fail = true;
-                }
-            } else {
-                fail = true;
-            }
-            if (fail == true) {
-                console.log("douban key pachong is fail !!");
-                callback(null, err);
-            }
-        });
-}
 function searchBookByTagNetWork(key, page, callback) {
     var skip = (15 * parseInt(page));
     var url = "https://www.douban.com/tag/" + encodeURI(key) + "/book?start=" + skip;
@@ -510,7 +477,7 @@ function searchBookByTagNetWork(key, page, callback) {
                     var url = $element.attr('href');
                     res.push(getDoubanIdByHref(url));
                 });
-                if (res.length > 0) {
+                if (res.length > 6) {
                     var json = {books: res};
                     callback(JSON.stringify(json), null);
                 }
@@ -539,8 +506,8 @@ function searchBookByTag(tag, page, callback) {
             console.log('searchBookByTag  no cache');
             searchBookByTagNetWork(tag, page, function (obj2, err2) {
                 if (obj2 == null) {
-                    console.log('searchBookIdByKeyNetWorkPACHONG error :' + err2);
-                    callback(null, 'searchBookIdByKeyNetWorkPACHONG err :' + err2);
+                    console.log('searchBookByTagNetWork error :' + err2);
+                    callback(null, 'searchBookByTagNetWork err :' + err2);
                 } else {
                     savaCache(hash, obj2, function (obj3, err3) {
                         console.log('从douban获取数据成功 返回客户端');
@@ -559,7 +526,7 @@ function searchBookIDByKey(key, offset, count, callback) {
     queryCache(hash, function (obj, error) {
         if (obj == null) {//没有缓存
             console.log('没有缓存,开始联网获取');
-            searchBookIdByKeyNetWorkPACHONG(key, offset, count, function (obj2, err2) {
+            searchBookIDByKeyNetWork(key, offset, count, function (obj2, err2) {
                 if (obj2 == null) {//联网获取失败
                     console.log('从douban获取数据失败' + err2);
                     callback(null, 'get database fail!' + err2);
@@ -594,7 +561,7 @@ AV.Cloud.define('cloud_search_tag', function (request, response) {
         page = 0;
     }
     console.log('cloud_search_tag key=' + key);
-    searchBookIDByKey(key, page, function (text, e) {
+    searchBookByTag(key, page, function (text, e) {
         if (e) {
             response.error(e);
         } else {
@@ -653,14 +620,13 @@ function cloud_search_key(key, response) {
                 }
                 else {
                     console.log("search finsh");
-                    console.log("result:=========   " + result);
                     response.success(result);
                 }
             });
         }
     });
 }
-// search by key     app new 
+// search by key     app new   2016/5/4
 AV.Cloud.define('cloud_search_book', function (request, response) {
     var key = request.params.key;
     console.log('cloud_search_book key=' + key);
