@@ -653,6 +653,7 @@ function cloud_search_key(key, response) {
                 }
                 else {
                     console.log("search finsh");
+                    console.log("result:=========   " + result);
                     response.success(result);
                 }
             });
