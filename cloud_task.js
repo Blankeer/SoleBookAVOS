@@ -704,7 +704,7 @@ function queryBookByIsbn(isbn, callback) {
                 books.push(obj);
                 callback(books, null);
             } else {
-                callback(null, error);
+                callback(null, "database no exist " + isbn);
             }
         },
         error: function (error) {
