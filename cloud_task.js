@@ -761,7 +761,7 @@ AV.Cloud.define('cloud_search_isbn', function (request, response) {
  * 随机获得一个
  */
 function getRandomBook(callback) {
-    var t = Math.ceil(Math.random() * 1000);
+    var t = Math.ceil(Math.random() * 1600);
     var query = new AV.Query('Book');
     query.skip(t).limit(1);
     query.first().then(function (object) {
