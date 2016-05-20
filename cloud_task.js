@@ -699,7 +699,9 @@ function queryBookByIsbn(isbn, callback) {
     query.equalTo('isbn', isbn);
     query.first({
         success: function (obj) {
-            callback(obj, null);
+            var books=[];
+            books.push(obj);
+            callback(books, null);
         },
         error: function (error) {
             callback(null, error);
