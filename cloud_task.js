@@ -478,7 +478,7 @@ function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
                 });
                 if (res.length > 0) {
                     var json = {books: res};
-                    callback(JSON.stringify(json), null);
+                    callback(json, null);
                 }
                 else {
                     err = "search result size=0";
