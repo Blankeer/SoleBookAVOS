@@ -477,8 +477,9 @@ function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
                     res.push(getDoubanIdByHref(url));
                 });
                 if (res.length > 0) {
-                    var json = {books: res};
-                    callback(json, null);
+                    // var json = {books: res};
+                    
+                    callback(res, null);
                 }
                 else {
                     err = "search result size=0";
