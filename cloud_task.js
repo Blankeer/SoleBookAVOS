@@ -653,6 +653,7 @@ function cloud_search_key(key, response) {
                     response.error(err)
                 }
                 else {
+                    console.log(result);
                     var res=[];
                     for(var item in result){
                         if(item!=null){
