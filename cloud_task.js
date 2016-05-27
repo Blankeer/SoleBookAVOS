@@ -655,11 +655,12 @@ function cloud_search_key(key, response) {
                 else {
                     // console.log(result);
                     var res = [];
-                    result.forEach(function (item) {
+                    for (var i = 0; i < result.length; i++) {
+                        var item = result[i];
                         if (item != null) {
                             res.push(res);
                         }
-                    })
+                    }
                     console.log("search finsh");
                     response.success(res);
                 }
