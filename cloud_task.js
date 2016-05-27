@@ -460,9 +460,8 @@ function searchBookIDByKeyNetWork(key, offset, count, callback) {
             }
         });
 }
-function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
-    var skip = (15 * parseInt(page));
-    var url = "https://book.douban.com/subject_search?search_text=" + encodeURI(key) + "&start=" + skip + "&cat=1001";
+function searchBookIdByKeyNetWorkPACHONG(key, offset, count, callback) {
+    var url = "https://book.douban.com/subject_search?search_text=" + encodeURI(key) + "&start=" + offset + "&cat=1001";
     superagent.get(url)
         .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
         .set('Cookie', 'bid="' + getCookie() + '"')
@@ -475,11 +474,7 @@ function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
                     var $element = $(element);
                     var url = $element.attr('href');
                     res.push(getDoubanIdByHref(url));
-                    console.log(getDoubanIdByHref(url));
                 });
-                // callback(res, null);
-                // var json = {books: res};
-
                 if (res.length > 0) {
                     var json = {books: res};
                     callback(JSON.stringify(json), null);
@@ -581,52 +576,52 @@ function searchBookIDByKey(key, offset, count, callback) {
     });
 }
 // secrch by tag
-AV.Cloud.define('cloud_search_tag', function (request, response) {
-    var key = request.params.key;
-    var page = request.params.page;
-    var call = function (id, back) {
-        console.log('search  id=' + id);
-        getBookByDoubanId(id, function (re, e) {// save database
-            if (re != null) {
-                back(null, re);
-            } else {
-                back(null, null);
-            }
-        });
-    }
-    if (page == null) {
-        page = 0;
-    }
-    console.log('cloud_search_tag key=' + key);
-    searchBookIDByKey(key, page, function (text, e) {
-        if (e) {
-            response.error(e);
-        } else {
-            console.log(' search ids=' + text);
-            var json = eval('(' + text + ')');
-            var ids = [];
-            var books = json.books;
-            for (var i in books) {
-                if (typeof(books[i]) != 'string') {
-                    ids.push(books[i].id);
-                } else {
-                    ids.push(books[i]);
-                }
-            }
-            async.mapLimit(ids, 5, call, function (err, result) {
-                if (err != null) {
-                    console.log(err);
-                    response.error(err)
-                }
-                else {
-                    console.log("search finsh");
-                    response.success(result);
-                }
-            });
-
-        }
-    });
-});
+// AV.Cloud.define('cloud_search_tag', function (request, response) {
+//     var key = request.params.key;
+//     var page = request.params.page;
+//     var call = function (id, back) {
+//         console.log('search  id=' + id);
+//         getBookByDoubanId(id, function (re, e) {// save database
+//             if (re != null) {
+//                 back(null, re);
+//             } else {
+//                 back(null, null);
+//             }
+//         });
+//     }
+//     if (page == null) {
+//         page = 0;
+//     }
+//     console.log('cloud_search_tag key=' + key);
+//     searchBookIDByKey(key, page, function (text, e) {
+//         if (e) {
+//             response.error(e);
+//         } else {
+//             console.log(' search ids=' + text);
+//             var json = eval('(' + text + ')');
+//             var ids = [];
+//             var books = json.books;
+//             for (var i in books) {
+//                 if (typeof(books[i]) != 'string') {
+//                     ids.push(books[i].id);
+//                 } else {
+//                     ids.push(books[i]);
+//                 }
+//             }
+//             async.mapLimit(ids, 5, call, function (err, result) {
+//                 if (err != null) {
+//                     console.log(err);
+//                     response.error(err)
+//                 }
+//                 else {
+//                     console.log("search finsh");
+//                     response.success(result);
+//                 }
+//             });
+//
+//         }
+//     });
+// });
 
 function cloud_search_key(key, response) {
     var call = function (id, back) {
