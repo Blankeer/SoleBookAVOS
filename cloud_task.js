@@ -473,7 +473,7 @@ function searchBookIdByKeyNetWorkPACHONG(key, offset, count, callback) {
                 $("a[href^='https://book.douban.com/subject/']:has(img)").each(function (idx, element) {
                     var $element = $(element);
                     var url = $element.attr('href');
-                    var i={};
+                    var i = {};
                     i["id"] = getDoubanIdByHref(url);
                     res.push(i);
                 });
@@ -653,13 +653,13 @@ function cloud_search_key(key, response) {
                     response.error(err)
                 }
                 else {
-                    console.log(result);
-                    var res=[];
-                    for(var item in result){
-                        if(item!=null){
+                    // console.log(result);
+                    var res = [];
+                    result.forEach(function (item) {
+                        if (item != null) {
                             res.push(res);
                         }
-                    }
+                    })
                     console.log("search finsh");
                     response.success(res);
                 }
