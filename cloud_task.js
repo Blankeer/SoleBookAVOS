@@ -476,21 +476,22 @@ function searchBookIdByKeyNetWorkPACHONG(key, page, callback) {
                     var url = $element.attr('href');
                     res.push(getDoubanIdByHref(url));
                 });
-                callback(res, null);
+                // callback(res, null);
                 // var json = {books: res};
 
-                // if (res.length > 0) {
-                    // var json = {books: res};
-                // }
-                // else {
-                //     err = "search result size=0";
-                //     fail = true;
-                // }
+                if (res.length > 0) {
+                    var json = {books: res};
+                    callback(JSON.stringify(json), null);
+                }
+                else {
+                    err = "search result size=0";
+                    fail = true;
+                }
             } else {
                 fail = true;
             }
             if (fail == true) {
-                console.log("douban key pachong is fail !!");
+                console.log("douban key pachong is fail !!" + err);
                 callback(null, err);
             }
         });
