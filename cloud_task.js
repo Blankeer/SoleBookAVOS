@@ -653,8 +653,14 @@ function cloud_search_key(key, response) {
                     response.error(err)
                 }
                 else {
+                    var res=[];
+                    for(var item in result){
+                        if(item!=null){
+                            res.push(res);
+                        }
+                    }
                     console.log("search finsh");
-                    response.success(result);
+                    response.success(res);
                 }
             });
         }
@@ -733,7 +739,13 @@ function queryBookByIsbn(isbn, callback) {
     query.equalTo('isbn', isbn);
     query.first({
         success: function (obj) {
-            callback(obj, null);
+            if (obj) {
+                var books = [];
+                books.push(obj);
+                callback(books, null);
+            } else {
+                callback(null, "database no exist " + isbn);
+            }
         },
         error: function (error) {
             callback(null, error);
@@ -789,7 +801,7 @@ AV.Cloud.define('cloud_search_isbn', function (request, response) {
  * 随机获得一个
  */
 function getRandomBook(callback) {
-    var t = Math.ceil(Math.random() * 300);
+    var t = Math.ceil(Math.random() * 1600);
     var query = new AV.Query('Book');
     query.skip(t).limit(1);
     query.first().then(function (object) {
