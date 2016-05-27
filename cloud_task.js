@@ -469,11 +469,13 @@ function searchBookIdByKeyNetWorkPACHONG(key, offset, count, callback) {
             var fail = false;
             if (err == null) {
                 var $ = cheerio.load(sres.text);
-                var res =  new Map();
+                var res = [];
                 $("a[href^='https://book.douban.com/subject/']:has(img)").each(function (idx, element) {
                     var $element = $(element);
                     var url = $element.attr('href');
-                    res.put("id",getDoubanIdByHref(url));
+                    var i={};
+                    i["id"] = getDoubanIdByHref(url);
+                    res.push(i);
                 });
                 if (res.length > 0) {
                     var json = {books: res};
