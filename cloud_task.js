@@ -494,6 +494,43 @@ function searchBookIdByKeyNetWorkPACHONG(key, offset, count, callback) {
             }
         });
 }
+function searchBookIdByKeyNetWorkPACHONG2(key, offset, count, callback) {
+    var url = "https://m.douban.com/j/search/?t=book&q=" + encodeURI(key) + "&p=" + offset;
+    superagent.get(url)
+        .set('User-Agent', 'Mozilla/5.0 (G12;Windows; Windows x64; rv:39.0) Gecko/20100101 Firefox/39.0')
+        .set('Cookie', 'bid="' + getCookie() + '"')
+        .end(function (err, sres) {
+            var fail = false;
+            if (err == null) {
+                var json = eval('(' + sres.text + ')');
+                var html=json.html;
+                var $ = cheerio.load(html);
+                var res = [];
+                $("a").each(function (idx, element) {
+                    var $element = $(element);
+                    var url = $element.attr('href');
+                    var i = {};
+                    i["id"] = getDoubanIdByHref(url);
+                    console.log(i);
+                    res.push(i);
+                });
+                if (res.length > 0) {
+                    var json = {books: res};
+                    callback(JSON.stringify(json), null);
+                }
+                else {
+                    err = "search result size=0";
+                    fail = true;
+                }
+            } else {
+                fail = true;
+            }
+            if (fail == true) {
+                console.log("douban key pachong is fail !!" + err);
+                callback(null, err);
+            }
+        });
+}
 function searchBookByTagNetWork(key, page, callback) {
     var skip = (15 * parseInt(page));
     var url = "https://www.douban.com/tag/" + encodeURI(key) + "/book?start=" + skip;
@@ -560,7 +597,7 @@ function searchBookIDByKey(key, offset, count, callback) {
     queryCache(hash, function (obj, error) {
         if (obj == null) {//没有缓存
             console.log('没有缓存,开始联网获取');
-            searchBookIdByKeyNetWorkPACHONG(key, offset, count, function (obj2, err2) {
+            searchBookIdByKeyNetWorkPACHONG2(key, offset, count, function (obj2, err2) {
                 if (obj2 == null) {//联网获取失败
                     console.log('从douban获取数据失败' + err2);
                     callback(null, 'get database fail!' + err2);
